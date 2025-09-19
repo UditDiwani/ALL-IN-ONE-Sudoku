@@ -111,7 +111,21 @@ window.onload = function(){
         }
     }
     validateBoard();
-    
+    fetch('http://localhost:3000/api/board', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ board: board })
+    })
+    .then(response => response.json())
+    .then(data => {
+    console.log('Server response:', data);
+    // Handle the backend's response as needed
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 function pattern(r,c){
     return (3 * (r%3) + Math.floor(r/3) + c ) % 9
