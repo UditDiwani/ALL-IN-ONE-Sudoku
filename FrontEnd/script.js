@@ -1,3 +1,7 @@
+const API_URL = "http://127.0.0.1:3000/api";
+//setInterval(()=>{
+    //validateBoard();
+//},500);
 function selectBox(button){
     if( button.style.border=="3px solid rgb(0, 0, 0)"){
         button.style.border = "3px solid rgb(255, 0, 0)";
@@ -63,69 +67,9 @@ input_buttons.forEach(btn=>{
 })
 let board=[];
 window.onload = function(){
-    let base = 3;
-    let rBase = [0,1,2];
-    let rows = [];
-    let cols = [];
+    console.log(localStorage.getItem("token"));
+    loadSudoku();
 
-    let shuffled_row_blocks = shuffle(rBase);
-    shuffled_row_blocks.forEach(g =>{
-        let shuffle_within_block = shuffle(rBase);
-        shuffle_within_block.forEach(r =>{
-            let row_index= (g*base) + r;
-            rows.push(row_index);
-        })
-    });
-    let shuffled_col_blocks = shuffle(rBase);
-
-    shuffled_col_blocks.forEach(g =>{
-        let shuffle_within_block1 = shuffle(rBase);
-        shuffle_within_block1.forEach(c =>{
-            let cols_index= (g*base) + c;
-            cols.push(cols_index);
-        })
-    });
-    let nums = [1,2,3,4,5,6,7,8,9];
-    let nums1= shuffle(nums);
-    board = generateBoard(rows,cols,nums1);
-    let cells = document.querySelectorAll('.cell');
-    let cell_pointer =0;
-    let random_positions=[];
-    for(let i = 0 ; i<cells.length;i++){
-        let choice = Math.random();
-        if(choice<0.67){
-            random_positions.push(0);
-        }
-        else{
-            random_positions.push(1);
-        }
-    }
-    for(let r=0;r<board.length;r++){
-        for(let c=0;c<board[0].length;c++){
-            if(random_positions[cell_pointer] == 1){
-                cells[cell_pointer].textContent = board[r][c];
-                cells[cell_pointer].style.fontWeight = "900";
-                cells[cell_pointer].style.color="rgb(0, 0, 0)";
-            }
-            cell_pointer+=1;
-        }
-    }
-    validateBoard();
-    fetch('http://localhost:3000/api/board', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ board: board })
-    })
-    .then(response => response.json())
-    .then(data => {
-    console.log('Server response:', data);
-    // Handle the backend's response as needed
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
 }
 function pattern(r,c){
     return (3 * (r%3) + Math.floor(r/3) + c ) % 9
@@ -179,7 +123,7 @@ function validateBoard(){
     }
     for(let r=0;r<9;r++){
         for(let c =0;c<9;c++){
-            if(cells1[cell_pointer1].textContent != `${board[r][c]}` && cells1[cell_pointer1].textContent != "" ){
+            if(cells1[cell_pointer1].textContent != `${board[r][c]}`){
                 cells1[cell_pointer1].style.color="rgb(255, 0, 0)";
             }
             else{
@@ -266,3 +210,92 @@ function RandomColor(){
     return colors[Math.floor(Math.random()*colors.length)]
 }
 
+function GenerateNewBoard(){
+    let base = 3;
+    let rBase = [0,1,2];
+    let rows = [];
+    let cols = [];
+
+    let shuffled_row_blocks = shuffle(rBase);
+    shuffled_row_blocks.forEach(g =>{
+        let shuffle_within_block = shuffle(rBase);
+        shuffle_within_block.forEach(r =>{
+            let row_index= (g*base) + r;
+            rows.push(row_index);
+        })
+    });
+    let shuffled_col_blocks = shuffle(rBase);
+
+    shuffled_col_blocks.forEach(g =>{
+        let shuffle_within_block1 = shuffle(rBase);
+        shuffle_within_block1.forEach(c =>{
+            let cols_index= (g*base) + c;
+            cols.push(cols_index);
+        })
+    });
+    let nums = [1,2,3,4,5,6,7,8,9];
+    let nums1= shuffle(nums);
+    board = generateBoard(rows,cols,nums1);
+    let boardCopy =[];
+    
+    let random_positions=[];
+    for(let i = 0 ; i<board.length;i++){
+        random_positions[i]=[];
+        for(let j=0;j<board[0].length;j++){
+            let choice = Math.random();
+            if(choice<0.67){
+                random_positions[i][j]=0;
+            }
+            else{
+                random_positions[i][j]=1;
+            }
+        }
+    }
+    for(let r=0;r<board.length;r++){
+        boardCopy[r]=[];
+        for(let c=0;c<board[0].length;c++){
+            if(random_positions[r][c] == 1){
+                boardCopy[r][c]=board[r][c];
+            }
+            else{
+                boardCopy[r][c]=-1;
+            }
+        }
+    }
+    return [board,boardCopy];
+}
+
+async function loadSudoku() {
+  const userId = localStorage.getItem("userId");
+  console.log(userId);
+  const res = await fetch(`${API_URL}/sudoku/load/${userId}`);
+  const sudoku = await res.json();
+
+  if (sudoku && sudoku.board && sudoku.board.length > 0) {
+    console.log("Restoring board:", sudoku);
+
+    RenderBoard(sudoku.board);
+  } else {
+    let puzzleRef=GenerateNewBoard();
+    let puzzle=puzzleRef[0];
+    let board = puzzleRef[1];
+    await fetch(`${API_URL}/sudoku/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, puzzle, board, elapsedTime:0, isCompleted:false })
+    });
+  }
+}
+
+function RenderBoard(board){
+    let cells=document.querySelectorAll('.cell');
+    let cell_pointer=0;
+    for(let i=0;i<board.length;i++){
+        for(let j=0;j<board[i].length;j++){
+            if(board[i][j]!=-1){
+                cells[cell_pointer].textContent=board[i][j];
+            }
+            cell_pointer+=1;
+        }
+    }
+}
