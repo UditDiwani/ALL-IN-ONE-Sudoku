@@ -1,8 +1,11 @@
-
+@property --degree{
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
 
 body{
-  background-image: linear-gradient(90deg, #ff00cc, #3333ff, #00bd97,#3333ff,#ff00cc);
-
+  background-color: #000;
 }
 
 table {
@@ -10,8 +13,16 @@ table {
   margin-right: auto;
   margin-top: 50px;
   margin-bottom: auto;
-  border: 20px solid black;
   border-collapse: collapse; /* Ensures no space between table borders */
+}
+
+table::before{
+  content: "";
+  inset: -5px;
+  background: conic-gradient(from var(--degree),#ff0000,#15ff00,#0033ff,#ff0000);
+  animation: rotate 1s linear infinite;
+  position: absolute;
+  z-index: -1;
 }
 
 td {
@@ -35,13 +46,15 @@ td {
   cursor: pointer;
 }
 
+
+
 tr:nth-child(4) td,
 tr:nth-child(7) td {
-  border-top: 6px solid #26ff00;
+  border-top: 6px solid #ff5e00;
 }
 td:nth-child(4),
 td:nth-child(7) {
-  border-left: 6px solid #26ff00;
+  border-left: 6px solid #ff5e00;
 }
 
 .input_buttons{
@@ -51,32 +64,48 @@ td:nth-child(7) {
   margin-top: 20px;
   margin-bottom: 0;
   gap: 40px;
-
-
 }
 
 .input_buttons > .functional_inp{
-  background: rgb(0, 255, 0);
   border-radius: 20%;
-  border: 5px solid rgb(255, 170, 0);
 }
 
 
 .input_buttons button{
   position: relative;
-  padding: 8px 16px;
-  font-size: 20px;
+  width: 60px;
+  height: 60px;
+  font-size: 30px;
+  border: none;
+  cursor: pointer;
   border-radius: 25%;
-  border: 5px solid;
-  border-color: crimson;
   background: radial-gradient(circle, violet, violet, violet);
   background-position: center;
   background-size: 100% 100%;
-
+  transition: transform 0.3s ease;
 }
 
-.input_buttons button:hover{
-  transform: scale(1.25);
+.input_buttons button::after,.input_buttons button::before{
+  content: "";
+  inset: -5px;
+  z-index: -1;
+  position: absolute;
+  border-radius: 25%;
+  background: conic-gradient(from var(--degree), #ff6a00, #ee0979, #662d8c, #ee0979, #ff6a00);
+  animation: rotate 1s linear infinite;
+}
+.input_buttons > button::before{
+  z-index: -2;
+  filter: blur(4px);
+}
+
+.input_buttons > button:active{
+  background: transparent;
+}
+
+@keyframes rotate{
+  0%{--degree: 0deg;}
+  100%{--degree: 360deg;}
 }
 .GameGrid{
   display: grid;
@@ -131,11 +160,10 @@ td:nth-child(7) {
   height: calc(100% + 16px);
   filter: blur(8px);
   animation: glowing 20s linear infinite;
-  transition: opacity .3s ease-in-out;
+  transition: opacity 1s ease-in-out;
   border-radius: 25%;
   opacity: 1;
 }
-
 
 
 .Save:active::after{
@@ -148,7 +176,7 @@ td:nth-child(7) {
 
 @keyframes glowing{
   0% {background-position: 0 0;}
-  50% {background-position: 400% 0;}
+  50% {background-position: 600% 0;}
   100% {background-position: 0 0;}
 }
 
@@ -188,8 +216,8 @@ td:nth-child(7) {
   position: absolute;
   grid-row: 1/2;
   grid-column: 1/2;
-  top: 50%;
-  left: 25%;
+  top: 40%;
+  left: 15%;
 
 }
 
@@ -213,9 +241,11 @@ td:nth-child(7) {
   }
   25%{
     background-size: 200% 100%;
+    opacity: 0.5;
   }
   50% {
     background-size: 300% 100%;
+    opacity: 0.5;
   }
   75%{
     background-size: 400% 100%;
@@ -233,7 +263,116 @@ td:nth-child(7) {
 .num{
   position: absolute;
   font-size: 75%;
-  bottom: 25px;
-  left: 30px;
+  bottom: 35px;
+  left: 40px;
 }
 
+.Timer{
+  color: transparent;
+  background: linear-gradient(
+    45deg,
+    #ff0000, #ff7300, #fffb00, #48ff00,
+    #00ffd5, #002bff, #ff00c8, #ff0000
+  );
+  background-size: 600%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  padding: 100px 85px;
+  border: 5px solid rgb(0, 234, 255);
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 5vh;
+  animation: glowing 30s linear infinite;
+}
+
+.Timer::before{
+  content: "";
+  position: absolute;
+  height: calc(100% + 5px);
+  width: calc(100% + 5px);
+  top: -5px;
+  left: -5px;
+  z-index: -2;
+  border-radius: 50%;
+  background: linear-gradient(
+    45deg,
+    #ff0000, #ff7300, #fffb00, #48ff00,
+    #00ffd5, #002bff, #ff00c8, #ff0000
+  );
+  filter: blur(10px);
+  background-size: 600%;
+  animation: glowing 30s linear infinite;
+}
+
+.Timer::after{
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  top: 0%;
+  left: 0%;
+  border-radius: 50%;
+  z-index: -1;
+  background-color: #000;
+}
+
+#gameOverOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+#gameOverOverlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.overlay-content {
+  background: rgba(15, 15, 15, 0.9);
+  border-radius: 20px;
+  padding: 3rem 4rem;
+  text-align: center;
+  box-shadow: 0 0 40px aqua;
+  border: 2px solid aqua;
+  animation: popIn 0.6s ease forwards;
+}
+
+.overlay-content h1 {
+  color: cyan;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.overlay-content p {
+  color: #aaa;
+  margin-bottom: 1.5rem;
+}
+
+.overlay-content #restartBtn {
+  background: black;
+  border: 2px solid aqua;
+  color: cyan;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 1rem;
+}
+
+.overlay-content #restartBtn:hover {
+  background: aqua;
+  color: black;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}

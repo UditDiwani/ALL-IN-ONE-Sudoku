@@ -12,16 +12,12 @@ connectDB();
 const app = express();
 app.use(express.json());
 
-app.use((req, res, next) => {
-  console.log("Request Origin:", req.headers.origin);
-  next();
-});
+
 
 const allowedOrigins = [
   'http://127.0.0.1:5500',   // live server
   'http://localhost:5500',   // some setups use localhost
   "null",                      // allow file:// (no origin)
-  'https://premonarchical-adamantly-numbers.ngrok-free.dev' // production
 ];
 
 app.use(cors({
@@ -41,9 +37,7 @@ const PORT = process.env.PORT || 3000;
 
 
 app.use('/api/sudoku', sudokuRoutes);
-// Middleware to parse JSON
 app.use('/api/auth', authRoutes);
-// Basic route
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });

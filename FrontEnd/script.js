@@ -5,6 +5,7 @@ let hist_pointer = -1;
 const input_buttons = document.querySelectorAll(".input_buttons button");
 let player;
 let seconds=0;
+let mistakes_div=document.querySelector('.Mistakes');
 setInterval(() => {
     seconds+=1;
     let minutes=Math.floor(seconds/60);
@@ -18,27 +19,39 @@ function selectBox(button){
     else{
         button.style.border="3px solid rgb(0, 0, 0)";
     }
+    let index=cells2.indexOf(button);
+    let tr_index=Math.floor(index/9);
+    let td_index=index%9;
+    document.querySelectorAll(`td:nth-child(${td_index+1}) button`).forEach(ele => {ele.style.backgroundColor="#2f9d96ff"});
+    document.querySelectorAll(`tr:nth-child(${tr_index+1}) td button`).forEach(ele => {ele.style.backgroundColor="#2f9d96ff"});
+
 }
 document.querySelectorAll('.cell').forEach(btn => {
     btn.addEventListener('click', function() {
         turnAllBlack();
-        selectBox(this);
-        HightlightAllNums(this);
+        HightlightAllNums(btn);
+        selectBox(btn);
 
     });
 });
 
+let cells2=Array.from(document.querySelectorAll('.cell'));
+
 function turnAllBlack(){
     document.querySelectorAll('.cell').forEach(btn =>{
         btn.style.border = "3px solid rgb(0, 0, 0)";
+        btn.style.backgroundColor="#00ffee";
     })
+    
 }
-
+let mistakes=0;
 input_buttons.forEach(btn => {
+    let button_ref;
     btn.addEventListener('click',function(){
-        
+        HightlightAllNums(btn);
         document.querySelectorAll('.cell').forEach(btn1 =>{
             if(btn1.style.border=="3px solid rgb(255, 0, 0)"){
+                button_ref=btn1;
                 if(btn.textContent == "↶"){
                     console.log("Undo");
                     Revert();   
@@ -46,7 +59,6 @@ input_buttons.forEach(btn => {
                 
                 else{
                     if(btn1.style.fontWeight!="900"){
-                        console.log();
                         if(btn1.textContent=='' || history.some(subarray => subarray.includes(btn1))==false){
                             history.push([btn1,btn1.textContent]);
                             hist_pointer=hist_pointer+1;
@@ -56,11 +68,24 @@ input_buttons.forEach(btn => {
                         history.push([btn1,btn1.textContent]);
                         hist_pointer=hist_pointer+1;
                     }
+                    if(history[hist_pointer][0]===history[hist_pointer-1][0] && history[hist_pointer][1]===history[hist_pointer-1][1]){
+                        console.log('not appended');
+                        console.log('history : ',history)
+                        history.pop();
+                        hist_pointer-=1;
+                    }
                 }
             }
-        })
+            
+        });
         validateBoard();
-        
+        if(button_ref.style.color=="rgb(255, 0, 0)"){
+            mistakes+=1;
+        }
+        if(mistakes>2){
+            deleteProgress();
+        }
+        mistakes_div.childNodes[0].textContent=`Mistakes : ${mistakes}`;
     })
 
 });
@@ -68,7 +93,6 @@ input_buttons.forEach(btn => {
 let board=[];
 window.onload = function(){
     loadSudoku();
-
 }
 window.onclose = function(){
     SaveProgress();
@@ -103,9 +127,7 @@ function generateBoard(rows1,cols1,Nums){
     console.log(board1);
     return board1;
 }
-let mistakes=0;
 function validateBoard(){
-    document.querySelector('.Mistakes').childNodes[0].textContent=`Mistakes: ${mistakes}`;
     const inp_button_counter = {
         "1":0,
         "2":0,
@@ -116,21 +138,19 @@ function validateBoard(){
         "7":0,
         "8":0,
         "9":0
-        }
+    }
     let inp_child = document.querySelectorAll(".input_buttons button .num");
     let cells1 = document.querySelectorAll('.cell');
     let cell_pointer1 = 0;
     let count=0;
     for(let i=0;i<9;i++){
         inp_child[`${i}`].textContent = 9;
+        inp_child[`${i}`].style.fontWeight = "900";
     }
     
     for(let r=0;r<9;r++){
         for(let c =0;c<9;c++){
             if(cells1[cell_pointer1].textContent != `${puzzleref[r][c]}`){
-                if(cells1[cell_pointer1].textContent!=''){
-                    mistakes+=1;
-                }
                 cells1[cell_pointer1].style.color="rgb(255, 0, 0)";
             }
             else{
@@ -140,6 +160,9 @@ function validateBoard(){
                     inp_button_counter[`${number}`]+=1;
                     
                     inp_child[`${number-1}`].textContent = 9 - inp_button_counter[`${number}`];
+                    let child_count = Number(inp_child[`${number-1}`].textContent);
+                    let child_color = child_count<4 ? "green" : child_count<7 ? "yellow" : "red";
+                    inp_child[`${number-1}`].style.color=child_color;  
                     count+=1;
                 }
             }
@@ -155,14 +178,14 @@ function validateBoard(){
                     inp_child[i].parentElement.style.backgroundImage="radial-gradient(circle, violet, violet, violet)";
                     inp_child[i].parentElement.style.opacity=0.5;
                     inp_child[i].parentElement.style.animation="";
-    
+                    
                 }, 1500);
             }
         }
         else{
             inp_child[i].parentElement.style.opacity=1;
         }
-        }
+    }
     
 
 
@@ -285,17 +308,19 @@ async function loadSudoku() {
     puzzleref=sudoku.puzzle;
     validateBoard();
   } else {
-    let puzzleRef=GenerateNewBoard();
-    let puzzle=puzzleRef[0];
-    let board = puzzleRef[1];
-    let defaultindeces = puzzleRef[2];
+    let puzzleReference=GenerateNewBoard();
+    let puzzle=puzzleReference[0];
+    let board = puzzleReference[1];
+    let defaultindeces = puzzleReference[2];
     
     await fetch(`${API_URL}/sudoku/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId:userId, puzzle:puzzle, defaultindeces:defaultindeces, board:board, elapsedTime:0, isCompleted:false })
     });
-    loadSudoku();
+    puzzleref=puzzle;
+    RenderBoard(board,defaultindeces);
+    validateBoard();
   }
 }
 
@@ -341,6 +366,37 @@ async function SaveProgress(){
     });
 }
 
+async function deleteProgress(){
+    document.querySelectorAll('button, input').forEach(el => el.disabled = true);
+    const overlay = document.getElementById('gameOverOverlay');
+    overlay.classList.add('active');
+    const userId = localStorage.getItem("userId");
+    console.log(userId);
+    try {
+        const res = await fetch(`${API_URL}/sudoku/delete/${userId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+        alert("Account deleted successfully.");
+        localStorage.removeItem("userId");
+        window.location.href = "http://12.0.0.1:5500/FrontEnd/UserSetUp.html"; // redirect to login or home
+        } else {
+        alert(data.message || "Error deleting account.");
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Server error while deleting account.");
+    }
+}
+
 document.querySelector('.Save').addEventListener('click',function(){
     SaveProgress();
 })
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+   window.location.replace("http://127.0.0.1:5500/FrontEnd/UserSetUp.html");
+});

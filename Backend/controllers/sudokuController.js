@@ -1,5 +1,4 @@
 const User = require('../models/User');
-
 // Save sudoku progress
 const saveSudoku = async (req, res) => {
   try {
@@ -32,4 +31,18 @@ const loadSudoku = async (req, res) => {
   }
 };
 
-module.exports = { saveSudoku, loadSudoku };
+const deleteSudoku = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const deletedUser = await User.findByIdAndDelete(userId);
+     if (!deletedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    res.status(200).json({ message: "User account and progress deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Failed to delete user account." });
+  }
+}
+
+module.exports = { saveSudoku, loadSudoku, deleteSudoku };

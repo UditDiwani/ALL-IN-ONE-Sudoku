@@ -1,5 +1,5 @@
 const express = require('express');
-const { saveSudoku, loadSudoku } = require('../controllers/sudokuController');
+const { saveSudoku, loadSudoku, deleteSudoku } = require('../controllers/sudokuController');
 
 const router = express.Router();
 
@@ -9,4 +9,6 @@ router.post('/save', saveSudoku);
 // Load sudoku progress
 router.get('/load/:userId', loadSudoku);
 
+// Delete sudoku progress
+router.delete('/delete/:userId', deleteSudoku)
 module.exports = router;
