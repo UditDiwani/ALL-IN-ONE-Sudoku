@@ -21,7 +21,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5500',   // live server
   'http://localhost:5500',   // some setups use localhost
   "null",                      // allow file:// (no origin)
-  'https://yourfrontend.com' // production
+  'https://premonarchical-adamantly-numbers.ngrok-free.dev' // production
 ];
 
 app.use(cors({
@@ -53,6 +53,7 @@ app.get('/api/sudoku/load', (req,res)=>{
   console.log('Response: ',res);
 });
 app.get('/api/sudoku/save', (req,res)=>{
+  res.send(req);
 });
 app.post('/api/board', (req, res) => {
   console.log('Received board:', req.body.board);

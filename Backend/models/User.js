@@ -16,6 +16,10 @@ const UserSchema = new mongoose.Schema({
       type: [[Number]], // original puzzle
       default: []       // empty by default
     },
+    defaultindeces: {
+      type: [[Number]],
+      default: []
+    },
     board: {
       type: [[Number]], // current state
       default: []

@@ -3,12 +3,13 @@ const User = require('../models/User');
 // Save sudoku progress
 const saveSudoku = async (req, res) => {
   try {
-    const { userId, puzzle, board, elapsedTime, isCompleted } = req.body;
+
+    const { userId, puzzle, defaultindeces, board, elapsedTime, isCompleted } = req.body;
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    user.sudoku = { puzzle, board, elapsedTime, isCompleted };
+    user.sudoku = { puzzle, defaultindeces, board, elapsedTime, isCompleted };
     await user.save();
 
     res.json({ message: 'Sudoku progress saved', sudoku: user.sudoku });

@@ -1,7 +1,16 @@
 const API_URL = "http://127.0.0.1:3000/api";
-//setInterval(()=>{
-    //validateBoard();
-//},500);
+let puzzleref;
+let history = [];
+let hist_pointer = -1;
+const input_buttons = document.querySelectorAll(".input_buttons button");
+let player;
+let seconds=0;
+setInterval(() => {
+    seconds+=1;
+    let minutes=Math.floor(seconds/60);
+    let hours=Math.floor(minutes/60);
+    document.querySelector('.Timer').textContent=`${hours} : ${minutes} : ${seconds%60}`
+}, 1000);
 function selectBox(button){
     if( button.style.border=="3px solid rgb(0, 0, 0)"){
         button.style.border = "3px solid rgb(255, 0, 0)";
@@ -10,8 +19,6 @@ function selectBox(button){
         button.style.border="3px solid rgb(0, 0, 0)";
     }
 }
-
-
 document.querySelectorAll('.cell').forEach(btn => {
     btn.addEventListener('click', function() {
         turnAllBlack();
@@ -26,21 +33,21 @@ function turnAllBlack(){
         btn.style.border = "3px solid rgb(0, 0, 0)";
     })
 }
-let history = [];
-let hist_pointer = -1;
-const input_buttons = document.querySelectorAll(".input_buttons button");
+
 input_buttons.forEach(btn => {
     btn.addEventListener('click',function(){
         
         document.querySelectorAll('.cell').forEach(btn1 =>{
             if(btn1.style.border=="3px solid rgb(255, 0, 0)"){
                 if(btn.textContent == "↶"){
+                    console.log("Undo");
                     Revert();   
                 }
-                    
+                
                 else{
                     if(btn1.style.fontWeight!="900"){
-                        if(btn1.textContent==''){
+                        console.log();
+                        if(btn1.textContent=='' || history.some(subarray => subarray.includes(btn1))==false){
                             history.push([btn1,btn1.textContent]);
                             hist_pointer=hist_pointer+1;
     
@@ -57,19 +64,14 @@ input_buttons.forEach(btn => {
     })
 
 });
-input_buttons.forEach(btn=>{
-    btn.addEventListener("mouseover",function(){
-        btn.style.transform = "scale(1.25)";
-    });
-    btn.addEventListener("mouseout",function(){
-        btn.style.transform = "scale(1)";
-    })
-})
+
 let board=[];
 window.onload = function(){
-    console.log(localStorage.getItem("token"));
     loadSudoku();
 
+}
+window.onclose = function(){
+    SaveProgress();
 }
 function pattern(r,c){
     return (3 * (r%3) + Math.floor(r/3) + c ) % 9
@@ -101,8 +103,9 @@ function generateBoard(rows1,cols1,Nums){
     console.log(board1);
     return board1;
 }
-
+let mistakes=0;
 function validateBoard(){
+    document.querySelector('.Mistakes').childNodes[0].textContent=`Mistakes: ${mistakes}`;
     const inp_button_counter = {
         "1":0,
         "2":0,
@@ -121,9 +124,13 @@ function validateBoard(){
     for(let i=0;i<9;i++){
         inp_child[`${i}`].textContent = 9;
     }
+    
     for(let r=0;r<9;r++){
         for(let c =0;c<9;c++){
-            if(cells1[cell_pointer1].textContent != `${board[r][c]}`){
+            if(cells1[cell_pointer1].textContent != `${puzzleref[r][c]}`){
+                if(cells1[cell_pointer1].textContent!=''){
+                    mistakes+=1;
+                }
                 cells1[cell_pointer1].style.color="rgb(255, 0, 0)";
             }
             else{
@@ -165,6 +172,8 @@ function validateBoard(){
 }
 
 function Revert(){
+    console.log(history);
+    console.log(hist_pointer);
     hist_pointer =hist_pointer-1;
 
     if(hist_pointer>=0){
@@ -193,7 +202,7 @@ function HightlightAllNums(cell_ref){
 }
 
 function GenerateConfetti(){
-    for(let i=0;i<30;i++){
+    for(let i=0;i<50;i++){
         const confetti = document.createElement("div");
         confetti.classList.add("confetti");
         confetti.style.left = Math.random() * 100 + "%";
@@ -262,32 +271,36 @@ function GenerateNewBoard(){
             }
         }
     }
-    return [board,boardCopy];
+    return [board,boardCopy,random_positions];
 }
 
 async function loadSudoku() {
   const userId = localStorage.getItem("userId");
-  console.log(userId);
   const res = await fetch(`${API_URL}/sudoku/load/${userId}`);
   const sudoku = await res.json();
-
+  player=sudoku;
   if (sudoku && sudoku.board && sudoku.board.length > 0) {
-    console.log("Restoring board:", sudoku);
-
-    RenderBoard(sudoku.board);
+    RenderBoard(sudoku.board,sudoku.defaultindeces);
+    seconds=sudoku.elapsedTime;
+    puzzleref=sudoku.puzzle;
+    validateBoard();
   } else {
     let puzzleRef=GenerateNewBoard();
     let puzzle=puzzleRef[0];
     let board = puzzleRef[1];
+    let defaultindeces = puzzleRef[2];
+    
     await fetch(`${API_URL}/sudoku/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, puzzle, board, elapsedTime:0, isCompleted:false })
+        body: JSON.stringify({ userId:userId, puzzle:puzzle, defaultindeces:defaultindeces, board:board, elapsedTime:0, isCompleted:false })
     });
+    loadSudoku();
   }
 }
 
-function RenderBoard(board){
+function RenderBoard(board,defaultindeces){
+
     let cells=document.querySelectorAll('.cell');
     let cell_pointer=0;
     for(let i=0;i<board.length;i++){
@@ -295,7 +308,39 @@ function RenderBoard(board){
             if(board[i][j]!=-1){
                 cells[cell_pointer].textContent=board[i][j];
             }
+            if(defaultindeces[i][j]==1){
+                cells[cell_pointer].style.fontWeight="900";
+            }
             cell_pointer+=1;
         }
     }
+
 }
+
+async function SaveProgress(){
+    let curr_board=[];
+    let cells=document.querySelectorAll('.cell');
+    let cell_pointer=0;
+    for(let i = 0 ;i<=8;i++){
+        curr_board[i]=[];
+        for(let j=0;j<=8;j++){
+            if(cells[cell_pointer].textContent!=''){
+                curr_board[i][j]=Number(cells[cell_pointer].textContent);
+            }
+            else{
+                curr_board[i][j]=-1;
+            }
+            cell_pointer+=1;
+        }
+    }
+    const userId = localStorage.getItem("userId");
+    await fetch(`${API_URL}/sudoku/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId:userId, puzzle:player.puzzle, defaultindeces:player.defaultindeces, board:curr_board, elapsedTime:seconds, isCompleted:false })
+    });
+}
+
+document.querySelector('.Save').addEventListener('click',function(){
+    SaveProgress();
+})
