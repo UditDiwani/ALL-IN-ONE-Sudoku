@@ -83,6 +83,7 @@ JWT_SECRET=<your_secret_token>
 PORT=3000
 
 4️⃣ Start the Server
+
 node server.js
 
 5️⃣ Open the Frontend
