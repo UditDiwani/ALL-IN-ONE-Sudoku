@@ -114,6 +114,4 @@ Add leaderboard and difficulty levels.
 
 Host backend on Render/Heroku and frontend on GitHub Pages.
 
-Implement JWT authentication for secure sessions.
-
 ngrok tunneling or something similar , and environment-based URL management.
