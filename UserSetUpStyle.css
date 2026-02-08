@@ -1,0 +1,220 @@
+
+
+@property --degree{
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 180deg;
+}
+html,body{
+    height: 100%;
+}
+body{
+    background:black;
+    position: relative;
+    display: grid;
+    z-index: 0;
+}
+
+#auth-section{
+    align-self: center;
+    justify-self: center;
+    content: "";
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 25% 25% 25% 25% ;
+    align-items: center;
+    justify-items: center;
+    background-color: rgb(64, 64, 64);
+    border-radius: 10% 0% 10% 0%;
+    height: 70vh;
+    width: 70vh;
+    z-index: -5;
+}
+
+@media (max-width: 768px) {
+    #auth-section {
+        height: 80vh;
+        width: 90vw;
+        border-radius: 5%;
+    }
+}
+
+@media (max-width: 480px) {
+    #auth-section {
+        height: 85vh;
+        width: 95vw;
+        border-radius: 5%;
+    }
+}
+
+#auth-section h1{
+    color: cyan;
+    text-align: center;
+    grid-row: 1/2;
+    grid-column: 2/4;
+    z-index: 1;
+}
+#auth-section h1::before{
+    content: "S i g n - I n";
+    position: absolute;
+    color: rgb(43, 154, 143);
+    z-index:-1;
+    margin: 0.6% 0% 0% -0.6%;
+}
+
+#email{
+    position: absolute;
+    height: 50%;
+    width: 80%;
+    background-color: black;
+    border: 0.5vh solid;
+    border-image-slice:1 ;
+    border-image-source: conic-gradient(from var(--degree),black,black,aqua,black,black,aqua,black);
+    color: magenta;
+    grid-row: 2/3;
+    grid-column: 2/4;
+    animation: rotate 4s linear infinite;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    #email {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    #email {
+        font-size: 12px;
+        border: 0.3vh solid;
+    }
+}
+
+
+#email:-webkit-autofill,
+#email:-webkit-autofill:hover,
+#email:-webkit-autofill:focus,
+#email:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px black inset !important;
+  -webkit-text-fill-color: magenta !important;              
+  transition: background-color 5000s ease-in-out 0s;     
+}
+
+#password{
+    position: absolute;
+    height: 50%;
+    width: 80%;
+    background-color: black;
+    color: magenta;
+    border: 0.5vh solid;
+    border-image-slice:1 ;
+    border-image-source: conic-gradient(from var(--degree),black,black,lime,black,black,lime,black);
+    grid-row: 3/4;
+    grid-column: 2/4;
+    animation: rotate 4s linear infinite;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    #password {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    #password {
+        font-size: 12px;
+        border: 0.3vh solid;
+    }
+}
+
+#password:-webkit-autofill,
+#password:-webkit-autofill:hover,
+#password:-webkit-autofill:focus,
+#password:-webkit-autofill:active {
+-webkit-box-shadow: 0 0 0 30px black inset !important;
+-webkit-text-fill-color: magenta !important;              
+transition: background-color 5000s ease-in-out 0s;     
+}
+
+
+
+#registerBtn{
+    position: absolute;
+    grid-row: 4/5;
+    grid-column: 2/3;
+    width: 14vh;
+    height: 7vh;
+    color: aqua;
+    background-color: black;
+    border: none;
+    border-radius: 2vh;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    #registerBtn {
+        width: 12vh;
+        height: 6vh;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    #registerBtn {
+        width: 10vh;
+        height: 5vh;
+        font-size: 12px;
+        border-radius: 1.5vh;
+    }
+}
+
+#loginBtn{
+    position: absolute;
+    grid-row: 4/5;
+    grid-column: 3/4;
+    color: aqua;
+    background-color: black;
+    width: 14vh;
+    height: 7vh;
+    border: none;
+    border-radius: 2vh;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    #loginBtn {
+        width: 12vh;
+        height: 6vh;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    #loginBtn {
+        width: 10vh;
+        height: 5vh;
+        font-size: 12px;
+        border-radius: 1.5vh;
+    }
+}
+
+#registerBtn::before,
+#loginBtn::before{
+    z-index: -1;
+    position: absolute;
+    content: "";
+    inset: -0.3vh;
+    background-image: conic-gradient(from var(--degree),black,black,red,black,black,red,black);
+    border-radius: 2vh;
+    animation: 4s rotate linear infinite;
+    filter: blur(1px);
+}
+
+@keyframes rotate{
+    0%{ --degree: 0deg}
+    100%{ --degree: 360deg}
+}
