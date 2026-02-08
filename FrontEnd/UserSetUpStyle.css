@@ -54,7 +54,7 @@ body{
     background-color: black;
     border: 0.5vh solid;
     border-image-slice:1 ;
-    border-image-source: conic-gradient(from var(--degree),black,black,aqua,black,black,lime,black);
+    border-image-source: conic-gradient(from var(--degree),black,black,aqua,black,black,aqua,black);
     color: magenta;
     grid-row: 2/3;
     grid-column: 2/4;
@@ -79,7 +79,7 @@ body{
     color: magenta;
     border: 0.5vh solid;
     border-image-slice:1 ;
-    border-image-source: conic-gradient(from var(--degree),black,black,aqua,black,black,lime,black);
+    border-image-source: conic-gradient(from var(--degree),black,black,lime,black,black,lime,black);
     grid-row: 3/4;
     grid-column: 2/4;
     animation: rotate 4s linear infinite;
@@ -131,6 +131,7 @@ transition: background-color 5000s ease-in-out 0s;
     background-image: conic-gradient(from var(--degree),black,black,red,black,black,red,black);
     border-radius: 2vh;
     animation: 4s rotate linear infinite;
+    filter: blur(1px);
 }
 
 @keyframes rotate{

@@ -318,6 +318,7 @@ async function loadSudoku() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId:userId, puzzle:puzzle, defaultindeces:defaultindeces, board:board, elapsedTime:0, isCompleted:false })
     });
+    player = { puzzle, defaultindeces, board, elapsedTime: 0, isCompleted: false };
     puzzleref=puzzle;
     RenderBoard(board,defaultindeces);
     validateBoard();
@@ -325,7 +326,6 @@ async function loadSudoku() {
 }
 
 function RenderBoard(board,defaultindeces){
-
     let cells=document.querySelectorAll('.cell');
     let cell_pointer=0;
     for(let i=0;i<board.length;i++){
@@ -359,11 +359,21 @@ async function SaveProgress(){
         }
     }
     const userId = localStorage.getItem("userId");
-    await fetch(`${API_URL}/sudoku/save`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId:userId, puzzle:player.puzzle, defaultindeces:player.defaultindeces, board:curr_board, elapsedTime:seconds, isCompleted:false })
-    });
+    try {
+        const response = await fetch(`${API_URL}/sudoku/save`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId:userId, puzzle:player.puzzle, defaultindeces:player.defaultindeces, board:curr_board, elapsedTime:seconds, isCompleted:false })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            console.error("Save error:", data);
+        } else {
+            console.log("Progress saved successfully");
+        }
+    } catch (error) {
+        console.error("Save failed:", error);
+    }
 }
 
 async function deleteProgress(){
@@ -381,7 +391,6 @@ async function deleteProgress(){
         const data = await res.json();
 
         if (res.ok) {
-        alert("Account deleted successfully.");
         localStorage.removeItem("userId");
         window.location.href = "http://12.0.0.1:5500/FrontEnd/UserSetUp.html"; // redirect to login or home
         } else {

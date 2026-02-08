@@ -46,9 +46,7 @@ app.get('/api/sudoku/load', (req,res)=>{
   console.log('Request: ',req);
   console.log('Response: ',res);
 });
-app.get('/api/sudoku/save', (req,res)=>{
-  res.send(req);
-});
+
 app.post('/api/board', (req, res) => {
   console.log('Received board:', req.body.board);
   res.json({ status: 'success', board: req.body.board });
