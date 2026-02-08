@@ -1,9 +1,9 @@
 const API_URL = "http://127.0.0.1:3000/api";
 
 // Check if user is logged in
-if (!localStorage.getItem("userId")) {
-  window.location.href = "./UserSetUp.html";
-}
+// if (!localStorage.getItem("userId")) {
+//   window.location.href = "./UserSetUp.html";
+// }
 
 let puzzleref;
 let history = [];
