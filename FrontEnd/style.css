@@ -13,7 +13,19 @@ table {
   margin-right: auto;
   margin-top: 50px;
   margin-bottom: auto;
-  border-collapse: collapse; /* Ensures no space between table borders */
+  border-collapse: collapse;
+}
+
+@media (max-width: 768px) {
+  table {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  table {
+    margin-top: 10px;
+  }
 }
 
 table::before{
@@ -35,6 +47,22 @@ td {
   border-collapse: collapse;
 }
 
+@media (max-width: 768px) {
+  td {
+    height: 40px;
+    width: 40px;
+    border: 3px solid black;
+  }
+}
+
+@media (max-width: 480px) {
+  td {
+    height: 30px;
+    width: 30px;
+    border: 2px solid black;
+  }
+}
+
 .cell{
   margin: 0;
   width: 100%;
@@ -44,6 +72,20 @@ td {
   display: block;
   font-size: 150%;
   cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .cell {
+    font-size: 120%;
+    border: 2px solid rgb(0, 0, 0);
+  }
+}
+
+@media (max-width: 480px) {
+  .cell {
+    font-size: 80%;
+    border: 1px solid rgb(0, 0, 0);
+  }
 }
 
 
@@ -64,6 +106,21 @@ td:nth-child(7) {
   margin-top: 20px;
   margin-bottom: 0;
   gap: 40px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .input_buttons {
+    gap: 20px;
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .input_buttons {
+    gap: 10px;
+    margin-top: 10px;
+  }
 }
 
 .input_buttons > .functional_inp{
@@ -83,6 +140,22 @@ td:nth-child(7) {
   background-position: center;
   background-size: 100% 100%;
   transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .input_buttons button {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .input_buttons button {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
 }
 
 .input_buttons button::after,.input_buttons button::before{
@@ -113,6 +186,20 @@ td:nth-child(7) {
   grid-template-rows: 1fr;
   position: relative;
 }
+
+@media (max-width: 768px) {
+  .GameGrid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .GameGrid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+}
 .GameGrid  .Save{
   position: absolute;
   z-index: 0;
@@ -130,6 +217,24 @@ td:nth-child(7) {
   background-position: center;
   background-size: 100% 100%;
   color: white;
+}
+
+@media (max-width: 768px) {
+  .GameGrid .Save {
+    padding: 20px 40px;
+    font-size: 20px;
+    top: 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  .GameGrid .Save {
+    padding: 15px 30px;
+    font-size: 16px;
+    top: 90%;
+    position: relative;
+    left: 0;
+  }
 }
 
 .Save::after{
@@ -206,7 +311,24 @@ td:nth-child(7) {
   border-color: red;
   color: white;
   text-align: center;
-  
+}
+
+@media (max-width: 768px) {
+  .GameGrid .Mistakes {
+    height: 80px;
+    width: 80px;
+    border: 3px solid;
+  }
+}
+
+@media (max-width: 480px) {
+  .GameGrid .Mistakes {
+    position: relative;
+    height: 70px;
+    width: 70px;
+    border: 2px solid;
+    margin: 10px auto;
+  }
 }
 .GameGrid .Mistakes span{
   grid-row: 2/3;
@@ -218,7 +340,24 @@ td:nth-child(7) {
   grid-column: 1/2;
   top: 40%;
   left: 15%;
+}
 
+@media (max-width: 768px) {
+  .GameGrid .Timer {
+    top: 35%;
+    left: 10%;
+  }
+}
+
+@media (max-width: 480px) {
+  .GameGrid .Timer {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: 10px auto;
+    padding: 30px 30px !important;
+    font-size: 2.5vh !important;
+  }
 }
 
 .confetti{
@@ -267,6 +406,20 @@ td:nth-child(7) {
   left: 40px;
 }
 
+@media (max-width: 768px) {
+  .num {
+    bottom: 25px;
+    left: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .num {
+    bottom: 18px;
+    left: 18px;
+  }
+}
+
 .Timer{
   color: transparent;
   background: linear-gradient(
@@ -283,6 +436,23 @@ td:nth-child(7) {
   font-weight: bold;
   font-size: 5vh;
   animation: glowing 30s linear infinite;
+}
+
+@media (max-width: 768px) {
+  .Timer {
+    padding: 60px 50px;
+    border: 3px solid rgb(0, 234, 255);
+    font-size: 3.5vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .Timer {
+    padding: 40px 35px;
+    border: 2px solid rgb(0, 234, 255);
+    font-size: 2.5vh;
+  }
+}
 }
 
 .Timer::before{
