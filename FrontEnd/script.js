@@ -1,4 +1,10 @@
 const API_URL = "http://127.0.0.1:3000/api";
+
+// Check if user is logged in
+if (!localStorage.getItem("userId")) {
+  window.location.href = "./UserSetUp.html";
+}
+
 let puzzleref;
 let history = [];
 let hist_pointer = -1;
@@ -299,10 +305,19 @@ function GenerateNewBoard(){
 
 async function loadSudoku() {
   const userId = localStorage.getItem("userId");
-  const res = await fetch(`${API_URL}/sudoku/load/${userId}`);
-  const sudoku = await res.json();
-  player=sudoku;
-  if (sudoku && sudoku.board && sudoku.board.length > 0) {
+  if (!userId) {
+    console.error("User ID not found. Redirecting to login.");
+    window.location.href = "./UserSetUp.html";
+    return;
+  }
+  try {
+    const res = await fetch(`${API_URL}/sudoku/load/${userId}`);
+    if (!res.ok) {
+      throw new Error(`Failed to load sudoku: ${res.status}`);
+    }
+    const sudoku = await res.json();
+    player=sudoku;
+    if (sudoku && sudoku.board && sudoku.board.length > 0) {
     RenderBoard(sudoku.board,sudoku.defaultindeces);
     seconds=sudoku.elapsedTime;
     puzzleref=sudoku.puzzle;
@@ -322,6 +337,11 @@ async function loadSudoku() {
     puzzleref=puzzle;
     RenderBoard(board,defaultindeces);
     validateBoard();
+  }
+  } catch (error) {
+    console.error("Error loading sudoku:", error);
+    alert("Failed to load game. Please try again.");
+    window.location.href = "./UserSetUp.html";
   }
 }
 
@@ -392,7 +412,7 @@ async function deleteProgress(){
 
         if (res.ok) {
         localStorage.removeItem("userId");
-        window.location.href = "http://12.0.0.1:5500/FrontEnd/UserSetUp.html"; // redirect to login or home
+        window.location.href = "http://127.0.0.1:5500/FrontEnd/UserSetUp.html"; // redirect to login or home
         } else {
         alert(data.message || "Error deleting account.");
         }
