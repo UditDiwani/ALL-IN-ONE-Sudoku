@@ -17,7 +17,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5500',   // live server
   'http://localhost:5500',   // some setups use localhost
   "null",                      // allow file:// (no origin)
-  "https://uditdiwani.github.io/",
+  "https://uditdiwani.github.io",
 ];
 
 app.use(cors({
