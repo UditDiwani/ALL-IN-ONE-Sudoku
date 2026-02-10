@@ -23,13 +23,18 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (origin==null || allowedOrigins.includes(origin)) {
-      return callback(null, true);
+    // allow requests with no origin (Postman, curl, mobile apps)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
     } else {
-      console.log("CORS blocked origin:", origin); // debug
-      return callback(new Error('Not allowed by CORS'));
+      console.error("CORS blocked origin:", origin);
+      callback(new Error("Not allowed by CORS"));
     }
   },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
