@@ -411,7 +411,7 @@ async function deleteProgress(){
 
         if (res.ok) {
         localStorage.removeItem("userId");
-        window.location.href = "http://127.0.0.1:5500/FrontEnd/UserSetUp.html"; // redirect to login or home
+        window.location.href = "./UserSetUp.html"; // redirect to login or home
         } else {
         alert(data.message || "Error deleting account.");
         }
@@ -426,5 +426,5 @@ document.querySelector('.Save').addEventListener('click',function(){
 })
 
 document.getElementById('restartBtn').addEventListener('click', () => {
-   window.location.replace("http://127.0.0.1:5500/FrontEnd/UserSetUp.html");
+    window.location.replace("./UserSetUp.html");
 });
