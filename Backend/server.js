@@ -8,7 +8,6 @@ const sudokuRoutes = require('./routes/sudokuRoutes');
 
 
 dotenv.config();
-connectDB();
 const app = express();
 app.use(express.json());
 
@@ -18,7 +17,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5500',   // live server
   'http://localhost:5500',   // some setups use localhost
   "null",                      // allow file:// (no origin)
-  "https://uditdiwani.github.io/ALL-IN-ONE-Sudoku/UserSetUp.html",
+  "https://uditdiwani.github.io",
 ];
 
 app.use(cors({
@@ -56,7 +55,17 @@ app.get('/api', (req, res) => {
   res.json({ ok: true, message: "Backend is running!" });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Start the server after connecting to the database
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('Failed to start server due to DB error');
+    process.exit(1);
+  }
+};
+
+startServer();

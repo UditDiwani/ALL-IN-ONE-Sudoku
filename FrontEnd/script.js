@@ -1,9 +1,8 @@
-const API_URL = "http://127.0.0.1:3000/api";
+const API_URL =
+  location.hostname === "localhost"
+    ? "http://127.0.0.1:3000/api"
+    : "https://sudoku-backend.onrender.com/api";
 
-// Check if user is logged in
-// if (!localStorage.getItem("userId")) {
-//   window.location.href = "./UserSetUp.html";
-// }
 
 let puzzleref;
 let history = [];
