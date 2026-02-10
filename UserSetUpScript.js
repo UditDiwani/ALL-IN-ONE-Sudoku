@@ -1,7 +1,7 @@
 const API_URL =
   location.hostname === "localhost"
     ? "http://127.0.0.1:3000/api"
-    : "https://sudoku-backend.onrender.com/api";
+    : "https://all-in-one-sudoku.onrender.com";
 let token = null;
 
 document.getElementById("registerBtn").addEventListener("click", async () => {
