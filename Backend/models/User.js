@@ -31,6 +31,10 @@ const UserSchema = new mongoose.Schema({
     isCompleted: {
       type: Boolean,
       default: false
+    },
+    mistakes: {
+      type: Number,
+      default: 0
     }
   }
 }, { timestamps: true });
