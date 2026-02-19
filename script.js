@@ -11,6 +11,7 @@ const input_buttons = document.querySelectorAll(".input_buttons button");
 let player;
 let seconds=0;
 let mistakes_div=document.querySelector('.Mistakes');
+let mistakes=0;
 setInterval(() => {
     seconds+=1;
     let minutes=Math.floor(seconds/60);
@@ -49,16 +50,19 @@ function turnAllBlack(){
     })
     
 }
-let mistakes=0;
 input_buttons.forEach(btn => {
     let button_ref;
     btn.addEventListener('click',function(){
         HightlightAllNums(btn);
+        let isUndo = false;
+        let selectedCellBeforeAction = null;
+        
         document.querySelectorAll('.cell').forEach(btn1 =>{
             if(btn1.style.border=="3px solid rgb(255, 0, 0)"){
                 button_ref=btn1;
                 if(btn.textContent == "↶"){
                     console.log("Undo");
+                    isUndo = true;
                     Revert();   
                 }
                 
@@ -83,10 +87,20 @@ input_buttons.forEach(btn => {
             }
             
         });
+        
         validateBoard();
-        if(button_ref.style.color=="rgb(255, 0, 0)"){
-            mistakes+=1;
+        
+        // Only count NEW mistakes if this wasn't an undo and a number was entered
+        if (!isUndo && button_ref && !btn.classList.contains('functional_inp')) {
+            // Check if the edited cell is NOW wrong
+            let isNowWrong = button_ref.style.color === "rgb(255, 0, 0)";
+            
+            if (isNowWrong) {
+                // Count as mistake if cell shows wrong answer
+                mistakes += 1;
+            }
         }
+        
         if(mistakes>2){
             deleteProgress();
         }
@@ -319,7 +333,9 @@ async function loadSudoku() {
     if (sudoku && sudoku.board && sudoku.board.length > 0) {
     RenderBoard(sudoku.board,sudoku.defaultindeces);
     seconds=sudoku.elapsedTime;
+    mistakes=sudoku.mistakes || 0;
     puzzleref=sudoku.puzzle;
+    mistakes_div.childNodes[0].textContent=`Mistakes : ${mistakes}`;
     validateBoard();
   } else {
     let puzzleReference=GenerateNewBoard();
@@ -330,9 +346,9 @@ async function loadSudoku() {
     await fetch(`${API_URL}/sudoku/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId:userId, puzzle:puzzle, defaultindeces:defaultindeces, board:board, elapsedTime:0, isCompleted:false })
+        body: JSON.stringify({ userId:userId, puzzle:puzzle, defaultindeces:defaultindeces, board:board, elapsedTime:0, isCompleted:false, mistakes:0 })
     });
-    player = { puzzle, defaultindeces, board, elapsedTime: 0, isCompleted: false };
+    player = { puzzle, defaultindeces, board, elapsedTime: 0, isCompleted: false, mistakes: 0 };
     puzzleref=puzzle;
     RenderBoard(board,defaultindeces);
     validateBoard();
@@ -382,7 +398,7 @@ async function SaveProgress(){
         const response = await fetch(`${API_URL}/sudoku/save`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId:userId, puzzle:player.puzzle, defaultindeces:player.defaultindeces, board:curr_board, elapsedTime:seconds, isCompleted:false })
+            body: JSON.stringify({ userId:userId, puzzle:player.puzzle, defaultindeces:player.defaultindeces, board:curr_board, elapsedTime:seconds, isCompleted:false, mistakes:mistakes })
         });
         const data = await response.json();
         if (!response.ok) {
