@@ -527,7 +527,7 @@ td:nth-child(7) {
     font-size: 2.5vh;
   }
 }
-}
+
 
 .Timer::before{
   content: "";

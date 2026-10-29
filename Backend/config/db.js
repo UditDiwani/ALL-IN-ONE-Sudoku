@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const dns = require('dns');
-
+console.log(!process.env.MONGO_URI)
 // Ensure Node's DNS resolver can resolve SRV records (use public DNS as fallback)
 try {
   dns.setServers(['8.8.8.8', '1.1.1.1']);
