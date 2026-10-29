@@ -444,3 +444,5 @@ document.querySelector('.Save').addEventListener('click',function(){
 document.getElementById('restartBtn').addEventListener('click', () => {
     window.location.replace("./UserSetUp.html");
 });
+
+console.log("URL: ",process.env.API_URL)
